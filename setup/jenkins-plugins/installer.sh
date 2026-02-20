@@ -1,33 +1,30 @@
 #!/bin/bash
 
-set -eo pipefail
+set -e
 
-JENKINS_URL='http://localhost:8080'
+JENKINS_URL="http://localhost:8080"
+JENKINS_USER="admin"
+JENKINS_TOKEN="117429a6b5ffdbffd9aeaa3aa8e4da688c"
 
-JENKINS_CRUMB=$(curl -s --cookie-jar /tmp/cookies -u admin:admin ${JENKINS_URL}/crumbIssuer/api/json | jq .crumb -r)
+# Get crumb JSON
+CRUMB_JSON=$(curl -s -u ${JENKINS_USER}:${JENKINS_TOKEN} \
+${JENKINS_URL}/crumbIssuer/api/json)
 
-JENKINS_TOKEN=$(curl -s -X POST -H "Jenkins-Crumb:${JENKINS_CRUMB}" --cookie /tmp/cookies "${JENKINS_URL}/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken?newTokenName=demo-token66" -u admin:admin | jq .data.tokenValue -r)
+CRUMB=$(echo $CRUMB_JSON | jq -r .crumb)
+CRUMB_FIELD=$(echo $CRUMB_JSON | jq -r .crumbRequestField)
 
-echo $JENKINS_URL
-echo $JENKINS_CRUMB
-echo $JENKINS_TOKEN
+echo "Crumb field: $CRUMB_FIELD"
+echo "Crumb value: $CRUMB"
 
 while read plugin; do
-   echo "........Installing ${plugin} .."
-   curl -s POST --data "<jenkins><install plugin='${plugin}' /></jenkins>" -H 'Content-Type: text/xml' "$JENKINS_URL/pluginManager/installNecessaryPlugins" --user "admin:$JENKINS_TOKEN"
+  echo "Installing ${plugin}..."
+  curl -s -X POST \
+    -u ${JENKINS_USER}:${JENKINS_TOKEN} \
+    -H "${CRUMB_FIELD}: ${CRUMB}" \
+    -H "Content-Type: text/xml" \
+    --data "<jenkins><install plugin='${plugin}' /></jenkins>" \
+    ${JENKINS_URL}/pluginManager/install
 done < plugins.txt
 
+echo "Plugin installation triggered."
 
-#### we also need to do a restart for some plugins
-
-#### check all plugins installed in jenkins
-# 
-# http://<jenkins-url>/script
-
-# Jenkins.instance.pluginManager.plugins.each{
-#   plugin -> 
-#     println ("${plugin.getDisplayName()} (${plugin.getShortName()}): ${plugin.getVersion()}")
-# }
-
-
-#### Check for updates/errors - http://<jenkins-url>/updateCenter
