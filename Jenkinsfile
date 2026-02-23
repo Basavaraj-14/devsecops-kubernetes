@@ -15,3 +15,8 @@ pipeline {
         }
     }
 }
+post {
+  always{
+    echo "pipeline has completed"
+  }
+}
