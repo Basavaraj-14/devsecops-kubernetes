@@ -23,7 +23,7 @@ pipeline {
           steps {
             withAWS(credentials: 'jenkinscreds', region: 'ap-south-1'){
               sh '''
-                aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:latest \
+                aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:latest
                 docker build -t devsecops:latest . \
                 docker tag devsecops:latest \
                 docker push devsecops:latest '''
