@@ -19,6 +19,16 @@ pipeline {
             }
           }
         }
+        stage('build and push docker image'){
+          steps {
+            withAWS(credentials: 'jenkins_creds', region: 'ap-south-1'){
+              sh '''
+                aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 187868012081-dkr.ecr.ao-south-1.amazonaws.com \
+                docker build -t springboot:latest . \
+                docker tag springboot:latest \
+                docker push springboot:latest '''
+            }
+          }
+        }
     }
 }
-
