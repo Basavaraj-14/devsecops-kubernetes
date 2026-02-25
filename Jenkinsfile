@@ -26,6 +26,7 @@ pipeline {
           steps {
             withAWS(credentials: 'jenkinscreds', region: 'ap-south-1'){
               sh '''
+                set -xe
                 aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 187868012081.dkr.ecr.ap-south-1.amazonaws.com
                 docker build -t devsecops:$GIT_COMMIT .
                 docker tag devsecops:$GIT_COMMIT 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:$GIT_COMMIT
