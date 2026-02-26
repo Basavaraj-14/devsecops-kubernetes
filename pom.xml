@@ -86,15 +86,19 @@
             <plugin>
     <groupId>org.pitest</groupId>
     <artifactId>pitest-maven-plugin</artifactId>
-    <version>1.15.0</version>
+    <version>1.17.4</version>
+    <dependencies>
+        <!-- JUnit 4/5 compatibility for Spring Boot 2.2 tests -->
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+    </dependencies>
     <configuration>
-        <targetClasses>com.devsecops.*</targetClasses>  <!-- Fixed: no <param> wrapper needed -->
-        <targetTests>com.devsecops.*Test</targetTests>  <!-- Fixed: match your test class pattern -->
+        <targetClasses>com.devsecops.*</targetClasses>
+        <targetTests>com.devsecops.*Test</targetTests>
         <mutationThreshold>70</mutationThreshold>
-        <outputFormats>
-            <outputFormat>XML</outputFormat>
-            <outputFormat>HTML</outputFormat>
-        </outputFormats>
     </configuration>
 </plugin>
 
