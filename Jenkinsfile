@@ -21,7 +21,7 @@ pipeline {
         }
         stage('PIT mutation testing'){
           steps {
-            sh "mvn clean test org.pitest:pitest-junit5-plugin:mutationCoverage"
+            sh "mvn clean test org.pitest:pitest-maven-plugin:mutationCoverage"
           }
         }
         stage('build and push docker image'){
