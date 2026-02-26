@@ -86,14 +86,10 @@
             <plugin>
     <groupId>org.pitest</groupId>
     <artifactId>pitest-maven-plugin</artifactId>
-    <version>1.9.11</version>
+    <version>1.15.0</version>
     <configuration>
-        <targetClasses>
-            <param>com.devsecops.*</param>
-        </targetClasses>
-        <targetTests>
-            <param>com.devsecops.*</param>
-        </targetTests>
+        <targetClasses>com.devsecops.*</targetClasses>  <!-- Fixed: no <param> wrapper needed -->
+        <targetTests>com.devsecops.*Test</targetTests>  <!-- Fixed: match your test class pattern -->
         <mutationThreshold>70</mutationThreshold>
         <outputFormats>
             <outputFormat>XML</outputFormat>
