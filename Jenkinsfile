@@ -35,12 +35,10 @@ pipeline {
         }
         stage('kubernets deployment'){
           steps {
-            withKubeConfig([credentialsId: 'kubeconfig']) {
             sh """ 
                   kubectl get nodes || exit 1
                   sed -i 's#replace#187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT:7}#g' k8s_deployment_service.yaml
                   kubectl apply -f k8s_deployment_service.yaml """
-            }
           }
         }
     }
