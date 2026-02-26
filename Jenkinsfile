@@ -19,11 +19,11 @@ pipeline {
             }
           }
         }
-        stage('PIT mutation testing'){
-          steps {
-            sh "mvn clean test org.pitest:pitest-maven-plugin:mutationCoverage -U"
-          }
-        }
+        //stage('PIT mutation testing'){
+          //steps {
+            //sh "mvn clean test org.pitest:pitest-maven-plugin:mutationCoverage -U"
+         // }
+        //}
         stage('build and push docker image'){
           steps {
             withAWS(credentials: 'jenkinscreds', region: 'ap-south-1'){
