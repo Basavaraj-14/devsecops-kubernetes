@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  tools {
-    maven 'Maven-3.9'
-  }
 
   stages {
       stage('Build Artifact') {
@@ -22,6 +19,11 @@ pipeline {
             }
           }
         }
+        stage('PIT mutation testing'){
+          steps {
+            sh "mvn pitest:pitest-maven:mutationCoverage"
+          }
+        }
         stage('build and push docker image'){
           steps {
             withAWS(credentials: 'jenkinscreds', region: 'ap-south-1'){
@@ -35,11 +37,9 @@ pipeline {
         }
         stage('kubernets deployment'){
           steps {
-            sh """ 
-                  kubectl get nodes || exit 1
-                  sed -i 's#replace#187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}#g' k8s_deployment_service.yaml
-                  kubectl apply -f k8s_deployment_service.yaml """
+            sh ''' sed -i 's#replace#187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}#g' k8s_deployment_service.yaml
+                  kubectl apply -f k8s_deployment_service.yaml '''
+            }
           }
         }
     }
-}
