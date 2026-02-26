@@ -14,9 +14,11 @@ spec:
             labels:
                 app: devsecops
         spec:
+            imagePullSecrets:
+               - name: ecr-secret
             containers:
                 - name: devsecops-container
-                  image: replace
+                  image: 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:27c7fecae6204187fe7759af8868645c19a85b80
 ---
 apiVersion: v1
 kind: Service
