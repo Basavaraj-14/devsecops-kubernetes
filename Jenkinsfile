@@ -19,6 +19,7 @@ pipeline {
                     junit 'target/surefire-reports/*.xml'
                     jacoco execPattern: 'target/jacoco.exec'
                 }
+<<<<<<< HEAD
             }
         }
         //stage('PIT mutation testing'){
@@ -41,6 +42,41 @@ pipeline {
                 }
             }
         }
+=======
+            }
+        }
+        stage('sonarQube SAST'){
+          steps {
+            stage('SonarQube Analysis') {
+              def mvn = tool 'Default Maven';
+              withSonarQubeEnv() {
+                  sh "${mvn}/bin/mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application'"
+    }
+  }
+}
+          }
+        }
+        //stage('PIT mutation testing'){
+           // steps {
+               // sh "mvn org.pitest:pitest-maven-plugin:mutationCoverage -U"
+            //}
+        //}
+
+        stage('Build and Push Docker Image') {
+            steps {
+                withAWS(credentials: 'jenkinscreds', region: 'ap-south-1') {
+                    sh '''
+                        aws ecr get-login-password --region ap-south-1 | \
+                        docker login --username AWS --password-stdin 187868012081.dkr.ecr.ap-south-1.amazonaws.com
+
+                        docker build -t devsecops:${GIT_COMMIT} .
+                        docker tag devsecops:${GIT_COMMIT} 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}
+                        docker push 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}
+                    '''
+                }
+            }
+        }
+>>>>>>> 2571d19 (jenkins file update with SAST using sonarqube)
 
         stage('Kubernetes Deployment') {
             steps {
