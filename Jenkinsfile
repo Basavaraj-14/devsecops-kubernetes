@@ -43,9 +43,10 @@ pipeline {
         //}
         stage('OWASP dependency check'){
             steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')])
-                sh "mvn dependency-check:check"
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                sh "mvn dependency-check:check -DnvdApiKey=${API}"
             }
+        }     
             post {
                 always {
                     dependencyCheckPublisher pattern: '/target/dependency-check-report.xml'
