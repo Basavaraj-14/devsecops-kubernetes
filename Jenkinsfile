@@ -27,7 +27,7 @@ pipeline {
         stage('sonarQube SAST'){
           steps {
               withSonarQubeEnv('SonarQube-Sanner') {
-                  sh "${mvn}/bin/mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application'"
+                  sh "mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application'"
               }
     }
   }
