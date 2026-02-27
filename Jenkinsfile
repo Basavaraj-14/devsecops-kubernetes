@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        maven 'Maven-3.9'
+    }
 
     stages {
 
@@ -24,9 +27,9 @@ pipeline {
         stage('sonarQube SAST'){
           steps {
             stage('SonarQube Analysis') {
-              def mvn = tool 'Default Maven';
+              def mvn = tool 'Maven-3.9';
               withSonarQubeEnv() {
-                  sh "${mvn}/bin/mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application'" 
+                  sh "${mvn}/bin/mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application'"
               }
     }
   }
