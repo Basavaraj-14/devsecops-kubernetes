@@ -29,6 +29,11 @@ pipeline {
               withSonarQubeEnv('SonarQube-Sanner') {
                   sh "mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application'"
               }
+              timeout(time: 1, unit: 'HOURS'){
+                script {
+                    waitForQualityGate abortPipeline: true
+                }
+              }
     }
   }
         //stage('PIT mutation testing'){
