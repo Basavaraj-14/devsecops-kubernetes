@@ -41,7 +41,16 @@ pipeline {
                // sh "mvn org.pitest:pitest-maven-plugin:mutationCoverage -U"
             //}
         //}
-
+        stage('OWASP dependency check'){
+            steps {
+                sh "mvn dependency-check:check"
+            }
+            post {
+                always {
+                    dependencyCheckPublisher pattern: '/target/dependencu-check-report.xml'
+                }
+            }
+        }
         stage('Build and Push Docker Image') {
             steps {
                 withAWS(credentials: 'jenkinscreds', region: 'ap-south-1') {
