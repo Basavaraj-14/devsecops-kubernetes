@@ -34,8 +34,8 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
               }
-    }
-  }
+          }
+        }
         //stage('PIT mutation testing'){
            // steps {
                // sh "mvn org.pitest:pitest-maven-plugin:mutationCoverage -U"
@@ -58,7 +58,7 @@ pipeline {
                 }
             }
         }
-        stage('Build and Push Docker Image') {
+        stage('Build and tag Docker Image') {
             steps {
                 withAWS(credentials: 'jenkinscreds', region: 'ap-south-1') {
                     sh '''
@@ -67,18 +67,33 @@ pipeline {
 
                         docker build -t devsecops:${GIT_COMMIT} .
                         docker tag devsecops:${GIT_COMMIT} 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}
-                        docker push 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}
-                    '''
+                        '''
                 }
             }
         }
-
+        stage('scan docker Image') {
+            steps {
+                sh "trivy image 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT} --severity CRITICAL, HIGH --exit-code 1"
+            }
+        } 
+        stage('push docker image') {
+            steps {
+                withAWS(credentials: 'jenkinscreds', region: 'ap-south-1'){
+                    sh " docker push 187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}"
+                }
+            }
+        }
         stage('Kubernetes Deployment') {
             steps {
+                withAWS(credentials: 'jenkinscreds', region: 'ap-south-1'){
                     sh '''
+                        aws eks update-kubeconfig --name 'devsecops-cluster' --region 'ap-south-1'
+                        kubectl config current-context
                         sed -i "s#replace#187868012081.dkr.ecr.ap-south-1.amazonaws.com/devsecops:${GIT_COMMIT}#g" k8s_deployment_service.yaml
                         kubectl apply -f k8s_deployment_service.yaml
                     '''
+                }
+                    
             }
         }
     }
