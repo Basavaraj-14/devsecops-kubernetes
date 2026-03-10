@@ -44,7 +44,7 @@ pipeline {
         stage('OWASP dependency check'){
             steps {
                 script {
-                //withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                //withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) 
                 //sh '''
                 //mvn dependency-check:check \\
                 //-DnvdApiKey=$NVD_API_KEY \\
@@ -56,14 +56,15 @@ pipeline {
                     sh 'touch target/dependency-check-report.xml'  
                     currentBuild.result = 'SUCCESS'
                 }
-            }
-        }     
+                }    
             post {
                 always {
                     dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
                 }
             }
-        }
+            }
+            
+                
         stage('Build and tag Docker Image') {
             steps {
                 withAWS(credentials: 'jenkinscreds', region: 'ap-south-1') {
@@ -103,3 +104,4 @@ pipeline {
             }
         }
     }
+}
