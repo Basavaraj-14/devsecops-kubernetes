@@ -49,6 +49,7 @@ pipeline {
                 -DnvdApiKey=$NVD_API_KEY \\
                 -DnvdApiDelay=6000 \\
                 -DautoUpdate=false
+                -DfailBuildOnCVSS=11
                 '''
             }
         }     
